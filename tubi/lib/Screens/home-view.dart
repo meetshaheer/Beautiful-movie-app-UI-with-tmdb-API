@@ -35,6 +35,8 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    double mh = MediaQuery.of(context).size.height;
+    double mw = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tubi"),
@@ -42,15 +44,35 @@ class _HomeViewState extends State<HomeView> {
       body: FutureBuilder(
         future: getApi(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CarouselSlider(
-              items: resposedata.map((movie) {
-                return Builder(builder: (BuildContext context) {
-                  return Container();
-                });
-              }).toList(),
-              options: CarouselOptions(),
-            );
+          if (snapshot.hasData) {
+            return Stack(children: [
+              Positioned(
+                height: mh * 0.7,
+                bottom: 10,
+                left: 0,
+                right: 0,
+                child: CarouselSlider(
+                  items: resposedata.map((movie) {
+                    return Builder(builder: (BuildContext context) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Image.network(
+                            'https://image.tmdb.org/t/p/original/${movie.posterPath}',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    });
+                  }).toList(),
+                  options: CarouselOptions(),
+                ),
+              )
+            ]);
           }
           return const CircularProgressIndicator();
         },
